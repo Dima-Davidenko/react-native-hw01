@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -9,41 +9,37 @@ import {
   ImageBackground,
   Keyboard,
   TouchableWithoutFeedback,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { logIn } from '../../redux/auth/authSlice';
 
 const initialState = {
+  name: '',
   password: '',
   email: '',
 };
 
-const LoginScreen = () => {
+const RegistrationScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
-
-  useEffect(() => {
-    const onChange = () => {
-      const width = Dimensions.get('window').width;
-      setDimensions(width);
-    };
-    Dimensions.addEventListener('change', onChange);
-    return () => {
-      Dimensions.removeEventListener('change', onChange);
-    };
-  }, []);
+  const { width } = useWindowDimensions();
   const keyboardHide = () => {
     setIsShowKeyboard(false);
     Keyboard.dismiss();
+    console.log(state);
+    setState(initialState);
   };
-  const handleLoginBtnClick = () => {
-    console.log('Email', state.email);
-    console.log('Password', state.password);
+
+  const onRegistration = () => {
+    dispatch(logIn());
+    console.log('Credentials', `${state.name} +${state.email} + ${state.password}`);
   };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
-        <ImageBackground source={require('../assets/images/backgoround.png')} style={styles.image}>
+        <ImageBackground source={require('../../assets/images/photoBG.png')} style={styles.image}>
           <KeyboardAvoidingView
             style={styles.wrapper}
             behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
@@ -51,15 +47,22 @@ const LoginScreen = () => {
             <View
               style={{
                 ...styles.form,
-                paddingBottom: isShowKeyboard ? 32 : 179,
-                width: dimensions,
+                paddingBottom: isShowKeyboard ? 32 : 113,
+                width,
               }}
             >
-              <Text style={styles.title}>Войти</Text>
+              <Text style={styles.title}>Registration</Text>
+              <TextInput
+                value={state.name}
+                onChangeText={value => setState(prevState => ({ ...prevState, name: value }))}
+                placeholder="Name"
+                style={styles.input}
+                onFocus={() => setIsShowKeyboard(true)}
+              />
               <TextInput
                 value={state.email}
                 onChangeText={value => setState(prevState => ({ ...prevState, email: value }))}
-                placeholder="Адрес электронной почты"
+                placeholder="Email"
                 secureTextEntry={true}
                 style={styles.input}
                 onFocus={() => setIsShowKeyboard(true)}
@@ -67,18 +70,19 @@ const LoginScreen = () => {
               <TextInput
                 value={state.password}
                 onChangeText={value => setState(prevState => ({ ...prevState, password: value }))}
-                placeholder="Пароль"
+                placeholder="Password"
                 secureTextEntry={true}
                 style={styles.input}
                 onFocus={() => setIsShowKeyboard(true)}
               />
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.btn}
-                onPress={handleLoginBtnClick}
-              >
-                <Text style={styles.textBtn}>Войти</Text>
+              <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onRegistration}>
+                <Text style={styles.textBtn}>Register</Text>
               </TouchableOpacity>
+              <View style={styles.btnBottom}>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.textBtnBottom}>Already have the account? Login.</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
@@ -104,11 +108,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingTop: 32,
+    paddingTop: 92,
   },
   title: {
-    fontWeight: '500',
     fontFamily: 'Roboto-Bold',
+    fontWeight: '500',
     textAlign: 'center',
     fontSize: 30,
     lineHeight: 35,
@@ -137,7 +141,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 43,
   },
   textBtn: {
     fontFamily: 'Roboto-Regular',
@@ -146,6 +149,17 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: '#FFFFFF',
   },
+  btnBottom: {
+    marginTop: 16,
+  },
+
+  textBtnBottom: {
+    textAlign: 'center',
+    color: '#1B4371',
+    fontSize: 16,
+    lineHeight: 19,
+    fontFamily: 'Roboto-Regular',
+  },
 });
 
-export default LoginScreen;
+export default RegistrationScreen;
