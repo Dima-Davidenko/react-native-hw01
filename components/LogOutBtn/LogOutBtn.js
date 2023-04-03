@@ -1,13 +1,13 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { useDispatch } from "react-redux";
-import { logOut } from "../../redux/auth/authSlice";
-import LogOutSvg from "./LogOutSvg";
+import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
+import LogOutSvg from './LogOutSvg';
+import { authSignOut } from '../../redux/auth/authOperations';
 
 const LogOutBtn = () => {
   const dispatch = useDispatch();
   const userLogOut = () => {
-    dispatch(logOut());
+    dispatch(authSignOut());
   };
   return (
     <TouchableOpacity onPress={userLogOut} style={styles.container}>

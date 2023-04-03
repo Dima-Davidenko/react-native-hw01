@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import {
-  StyleSheet,
-  KeyboardAvoidingView,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
   ImageBackground,
   Keyboard,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
   useWindowDimensions,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { logIn } from '../../redux/auth/authSlice';
+import { authSignUp } from '../../redux/auth/authOperations';
+import useKeyboard from '../../hooks/useKeyboard';
 
 const initialState = {
-  name: '',
+  userName: '',
   password: '',
   email: '',
 };
@@ -23,18 +24,16 @@ const initialState = {
 const RegistrationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [state, setState] = useState(initialState);
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const isKeyboardOpen = useKeyboard();
   const { width } = useWindowDimensions();
   const keyboardHide = () => {
-    setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
     setState(initialState);
   };
 
   const onRegistration = () => {
-    dispatch(logIn());
-    console.log('Credentials', `${state.name} +${state.email} + ${state.password}`);
+    dispatch(authSignUp(state));
+    setState(initialState);
   };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -47,25 +46,22 @@ const RegistrationScreen = ({ navigation }) => {
             <View
               style={{
                 ...styles.form,
-                paddingBottom: isShowKeyboard ? 32 : 113,
+                paddingBottom: isKeyboardOpen ? 32 : 113,
                 width,
               }}
             >
               <Text style={styles.title}>Registration</Text>
               <TextInput
-                value={state.name}
-                onChangeText={value => setState(prevState => ({ ...prevState, name: value }))}
+                value={state.userName}
+                onChangeText={value => setState(prevState => ({ ...prevState, userName: value }))}
                 placeholder="Name"
                 style={styles.input}
-                onFocus={() => setIsShowKeyboard(true)}
               />
               <TextInput
                 value={state.email}
                 onChangeText={value => setState(prevState => ({ ...prevState, email: value }))}
                 placeholder="Email"
-                secureTextEntry={true}
                 style={styles.input}
-                onFocus={() => setIsShowKeyboard(true)}
               />
               <TextInput
                 value={state.password}
@@ -73,7 +69,6 @@ const RegistrationScreen = ({ navigation }) => {
                 placeholder="Password"
                 secureTextEntry={true}
                 style={styles.input}
-                onFocus={() => setIsShowKeyboard(true)}
               />
               <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onRegistration}>
                 <Text style={styles.textBtn}>Register</Text>

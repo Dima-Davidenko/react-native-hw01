@@ -1,3 +1,3 @@
-export const selectIsLoggedIn = (state) => {
-  return state.auth.isLoggedIn;
+export const selectAuthUid = state => {
+  return state.auth.uid;
 };

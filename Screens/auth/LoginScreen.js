@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import useKeyboard from '../../hooks/useKeyboard';
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -12,7 +13,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { logIn } from '../../redux/auth/authSlice';
+import { authSignIn } from '../../redux/auth/authOperations';
 
 const initialState = {
   password: '',
@@ -23,18 +24,16 @@ const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const [state, setState] = useState(initialState);
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const isKeyboardOpen = useKeyboard();
   const { width } = useWindowDimensions();
 
   const keyboardHide = () => {
-    setIsShowKeyboard(false);
     Keyboard.dismiss();
-    console.log(state);
     setState(initialState);
   };
   const onLogin = () => {
-    console.log('Credentials', `${state.email} + ${state.password}`);
-    dispatch(logIn());
+    dispatch(authSignIn(state));
+    setState(initialState);
   };
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -47,7 +46,7 @@ const LoginScreen = ({ navigation }) => {
             <View
               style={{
                 ...styles.form,
-                paddingBottom: isShowKeyboard ? 32 : 179,
+                paddingBottom: isKeyboardOpen ? 32 : 179,
                 width,
               }}
             >
@@ -56,9 +55,7 @@ const LoginScreen = ({ navigation }) => {
                 value={state.email}
                 onChangeText={value => setState(prevState => ({ ...prevState, email: value }))}
                 placeholder="Email"
-                secureTextEntry={true}
                 style={styles.input}
-                onFocus={() => setIsShowKeyboard(true)}
               />
               <TextInput
                 value={state.password}
@@ -66,7 +63,6 @@ const LoginScreen = ({ navigation }) => {
                 placeholder="Password"
                 secureTextEntry={true}
                 style={styles.input}
-                onFocus={() => setIsShowKeyboard(true)}
               />
               <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onLogin}>
                 <Text style={styles.textBtn}>Login</Text>

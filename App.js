@@ -6,6 +6,8 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import Navigation from './components/Navigation/Navigation';
 import { store } from './redux/store';
+import Main from './components/Main';
+
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
@@ -27,9 +29,11 @@ const App = () => {
   return (
     <Provider store={store}>
       <View style={styles.container} onLayout={onLayoutRootView}>
-        <NavigationContainer>
-          <Navigation />
-        </NavigationContainer>
+        <Main>
+          <NavigationContainer>
+            <Navigation />
+          </NavigationContainer>
+        </Main>
       </View>
     </Provider>
   );
