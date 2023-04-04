@@ -15,8 +15,9 @@ import Header from '../Header/Header';
 import CreatePostBtn from '../MainNavButtons/CreatePostBtn';
 import HomeBtn from '../MainNavButtons/HomeBtn';
 import ProfileBtn from '../MainNavButtons/ProfileBtn';
+import { app } from '../../firebase/config';
 
-const auth = getAuth();
+const auth = getAuth(app);
 
 const AuthStack = createNativeStackNavigator();
 const MainTab = createBottomTabNavigator();
